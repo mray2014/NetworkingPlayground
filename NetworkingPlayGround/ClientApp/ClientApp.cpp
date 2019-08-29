@@ -8,6 +8,21 @@
 
 int main()
 {
-    std::cout << "Hello World!\n"; 
+	bool init = Socket::InitSocket();
+
+	if (!init)
+	{
+		printf("Socket initializing fucked up");
+	}
+
+
+	Socket* severSocket = new Socket(SocketType::UDP);
+	severSocket->OpenConnect(8080);
+
+	bool quit = false;
+
+	while (!quit) {
+
+	}
 }
 

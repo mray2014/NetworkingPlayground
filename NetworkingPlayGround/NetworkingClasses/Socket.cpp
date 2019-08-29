@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Socket.h"
 #include <iostream>
 #include <string>
@@ -79,20 +78,22 @@ void Socket::RecieveThread()
 
 bool Socket::OpenBind(int portNum, bool useLocal)
 {
+	Address newAdd = Address(127, 0, 0, 1, portNum);
 	port = portNum;
 
 	// Setup the description of the address
-	sockaddr_in address;
-	address.sin_family = AF_INET;
-	address.sin_port = htons((unsigned short)portNum);
+	addressIN;
+	addressIN.sin_family = AF_INET;
+	addressIN.sin_addr.S_un.S_addr = (ULONG)newAdd.GetAddress();
+	addressIN.sin_port = htons((unsigned short)portNum);
 
 	if (useLocal) 
 	{
-		address.sin_addr.S_un.S_addr = INADDR_ANY;
+		addressIN.sin_addr.S_un.S_addr = INADDR_ANY;
 	}
 
 	// Bind address/port to socket
-	int finishBind = bind(socketHandle, (const sockaddr*)&address, sizeof(sockaddr_in));
+	int finishBind = bind(socketHandle, (const sockaddr*)&addressIN, sizeof(sockaddr_in));
 
 	if (finishBind < 0)
 	{
@@ -104,20 +105,21 @@ bool Socket::OpenBind(int portNum, bool useLocal)
 
 bool Socket::OpenConnect(int portNum, bool useLocal)
 {
+	Address newAdd = Address(127, 0, 0, 1, portNum);
 	port = portNum;
 
 	// Setup the description of the address
-	sockaddr_in address;
-	address.sin_family = AF_INET;
-	address.sin_port = htons((unsigned short)portNum);
-
+	addressIN;
+	addressIN.sin_family = AF_INET;
+	addressIN.sin_addr.S_un.S_addr = (ULONG)newAdd.GetAddress();
+	addressIN.sin_port = htons((unsigned short)portNum);
 	if (useLocal)
 	{
-		address.sin_addr.S_un.S_addr = INADDR_ANY;
+		addressIN.sin_addr.S_un.S_addr = INADDR_ANY;
 	}
 
 	// Bind address/port to socket
-	int finishConnect = connect(socketHandle, (const sockaddr*)&address, sizeof(sockaddr_in));
+	int finishConnect = connect(socketHandle, (const sockaddr*)&addressIN, sizeof(sockaddr_in));
 
 	if (finishConnect < 0)
 	{
@@ -195,9 +197,14 @@ bool Socket::SetNonBlockingMode()
 	return true;
 }
 
+sockaddr_in Socket::GetSocketAddressIn()
+{
+	return addressIN;
+}
+
 int Socket::GetSocketHandle()
 {
-	return 0;
+	return socketHandle;
 }
 
 int Socket::GetPortNumber()

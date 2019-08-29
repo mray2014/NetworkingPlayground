@@ -36,6 +36,7 @@ public:
 
 	bool SetNonBlockingMode();
 
+	sockaddr_in GetSocketAddressIn();
 	int GetSocketHandle();
 	int GetPortNumber();
 
@@ -49,6 +50,7 @@ private:
 	int Recieve(unsigned char buffer[], unsigned int bufferSize);
 
 	SocketType socketType;
+	sockaddr_in addressIN;
 	int socketHandle;
 	int port;
 };
