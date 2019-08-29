@@ -28,7 +28,8 @@ public:
 	void SendThread();
 	void RecieveThread();
 
-	bool Open(int portNum);
+	bool OpenBind(int portNum, bool useLocal = false);
+	bool OpenConnect(int portNum, bool useLocal = false);
 	void Close();
 
 	bool IsOpen();

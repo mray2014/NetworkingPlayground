@@ -77,20 +77,49 @@ void Socket::RecieveThread()
 	}
 }
 
-bool Socket::Open(int portNum)
+bool Socket::OpenBind(int portNum, bool useLocal)
 {
 	port = portNum;
 
 	// Setup the description of the address
 	sockaddr_in address;
 	address.sin_family = AF_INET;
-	address.sin_addr.S_un.S_addr = INADDR_ANY;
 	address.sin_port = htons((unsigned short)portNum);
+
+	if (useLocal) 
+	{
+		address.sin_addr.S_un.S_addr = INADDR_ANY;
+	}
 
 	// Bind address/port to socket
 	int finishBind = bind(socketHandle, (const sockaddr*)&address, sizeof(sockaddr_in));
 
 	if (finishBind < 0)
+	{
+		printf("We done fucked up the binding bro");
+		return false;
+	}
+	return true;
+}
+
+bool Socket::OpenConnect(int portNum, bool useLocal)
+{
+	port = portNum;
+
+	// Setup the description of the address
+	sockaddr_in address;
+	address.sin_family = AF_INET;
+	address.sin_port = htons((unsigned short)portNum);
+
+	if (useLocal)
+	{
+		address.sin_addr.S_un.S_addr = INADDR_ANY;
+	}
+
+	// Bind address/port to socket
+	int finishConnect = connect(socketHandle, (const sockaddr*)&address, sizeof(sockaddr_in));
+
+	if (finishConnect < 0)
 	{
 		printf("We done fucked up the binding bro");
 		return false;

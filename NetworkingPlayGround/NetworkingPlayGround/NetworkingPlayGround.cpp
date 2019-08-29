@@ -115,7 +115,7 @@ int main()
 	udpSocket = new Socket(SocketType::UDP);
 
 	// Step 2: Bind the socket to a port
-	udpSocket->Open(30000);
+	udpSocket->OpenBind(30000, true);
 
 	// Step 3(Optional): Set socket to Non-Blocking
 	//udpSocket->SetNonBlockingMode();
