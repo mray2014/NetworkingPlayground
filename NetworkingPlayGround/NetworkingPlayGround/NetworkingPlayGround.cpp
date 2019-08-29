@@ -3,44 +3,13 @@
 
 #include "stdafx.h"
 #include "Socket.h"
-#include <thread>
 #include <string>
 #include <iostream>
 
 #define SQUARE_ROOT_PRECISION 5
 
-Socket udpSocket;
-bool quit = false;
+Socket* udpSocket;
 
-void RecieveMessageUDP()
-{
-	while (!quit)
-	{
-		unsigned char buffer[256];
-		unsigned int bufferSize = sizeof(buffer);
-		int result = udpSocket.Recieve(buffer, bufferSize);
-	}
-}
-
-void SendMessageUDP() 
-{
-	while (!quit)
-	{
-		std::string input;
-
-		std::getline(std::cin, input);
-		//std::cin >> input;
-
-		if (input[0] == 'q')
-		{
-			quit = true;
-		}
-		else
-		{
-			udpSocket.Send(&input[0], sizeof(input), Address(127, 0, 0, 1, udpSocket.GetPortNumber()));
-		}
-	}
-}
 float SquareRoot(float num) {
 
 	// Square rooting is like playing the guessing game
@@ -143,34 +112,21 @@ int main()
 	}
 
 	// Step 1: Create a UDP Socket
-	udpSocket = Socket(SocketType::UDP);
+	udpSocket = new Socket(SocketType::UDP);
 
 	// Step 2: Bind the socket to a port
-	udpSocket.Open(30000);
+	udpSocket->Open(30000);
 
 	// Step 3(Optional): Set socket to Non-Blocking
-	//udpSocket.SetNonBlockingMode();
+	//udpSocket->SetNonBlockingMode();
 
-	// Step 4: Send and Recieve data
-
-	// Sending Data
-	//const char data[] = "We In here Getting pizza";
-	//udpSocket.Send(data, sizeof(data), Address(127, 0, 0, 1, udpSocket.GetPortNumber()));
-
-	//const char data2[] = "Chill";
-	//udpSocket.Send(data2, sizeof(data2), Address(127, 0, 0, 1, udpSocket.GetPortNumber()));
-
-	std::thread sendingThread(SendMessageUDP);
-
-	// Recieving Data
-	std::thread recievingThread(RecieveMessageUDP);
-
-	sendingThread.join();
-	recievingThread.join();
+	udpSocket->JoinThreads();
 
 	//float squareRoot = SquareRoot(54);
 	//printf("%f", squareRoot);
 
+
+	delete udpSocket;
     return 0;
 }
 

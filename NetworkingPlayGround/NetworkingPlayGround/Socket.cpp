@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include "Socket.h"
+#include <iostream>
+#include <string>
+
+bool quit = false;
 
 bool Socket::InitSocket()
 {
@@ -9,11 +13,13 @@ bool Socket::InitSocket()
 
 void Socket::ShutDownSockets()
 {
+	quit = true;
 	WSACleanup();
 }
 
 Socket::Socket()
 {
+
 }
 
 Socket::Socket(SocketType type)
@@ -32,12 +38,43 @@ Socket::Socket(SocketType type)
 	{
 
 	}
-
+	sendingThread = std::thread(&Socket::SendThread, this);
+	recievingThread = std::thread(&Socket::RecieveThread, this);
 }
 
 
 Socket::~Socket()
 {
+}
+
+void Socket::SendThread()
+{
+	while (!quit)
+	{
+		std::string input;
+
+		std::getline(std::cin, input);
+		//std::cin >> input;
+
+		if (input[0] == 'q')
+		{
+			quit = true;
+		}
+		else
+		{
+			Send(&input[0], sizeof(input), Address(127, 0, 0, 1, GetPortNumber()));
+		}
+	}
+}
+
+void Socket::RecieveThread()
+{
+	while (!quit)
+	{
+		unsigned char buffer[256];
+		unsigned int bufferSize = sizeof(buffer);
+		int result = Recieve(buffer, bufferSize);
+	}
 }
 
 bool Socket::Open(int portNum)
@@ -137,4 +174,10 @@ int Socket::GetSocketHandle()
 int Socket::GetPortNumber()
 {
 	return port;
+}
+
+void Socket::JoinThreads()
+{
+	sendingThread.join();
+	recievingThread.join();
 }
